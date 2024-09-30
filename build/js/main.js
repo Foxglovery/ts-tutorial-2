@@ -49,6 +49,7 @@ const greetGuitarist = (guitarist) => {
 };
 console.log(greetGuitarist(JP));
 // ENUMS
+// these are an object but the contents are enumerated
 var Grade;
 (function (Grade) {
     Grade[Grade["U"] = 1] = "U";
@@ -57,4 +58,4 @@ var Grade;
     Grade[Grade["B"] = 4] = "B";
     Grade[Grade["A"] = 5] = "A";
 })(Grade || (Grade = {}));
-console.log(Grade.U); // displays 0
+console.log(Grade.U); // displays 1
