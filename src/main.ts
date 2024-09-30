@@ -1,20 +1,84 @@
-let myName: string = 'Gabe'
 
-let meaningOfLife: number;
-let isLoading: boolean;
-// this is a union type allowing for either 
-// let album: string | number;
-let album: any;
-myName = 'Gabriel'
-meaningOfLife = 42
-isLoading = true
-album = 'Van Halen'
 
-const sum = (a: number, b: string) => {
-    return a + b
+let stringArr = ['one', 'hey', 'Gabe']
+let guitars = ['Strat', 'Les Paul', 5150]
+
+let mixedData = ['EVH', 1984, true]
+
+stringArr[0] = 'John'
+stringArr.push('heyo')
+
+guitars[0] = 1984
+guitars.unshift('Jim')
+
+guitars = stringArr
+mixedData = guitars
+
+let test = []
+let bands: string[] = []
+bands.push('Van Halen')
+
+//TUPLE
+let myTuple: [string, number, boolean] = ['Gabe', 42, true]
+
+let mixed = ['John', 1, false]
+
+myTuple[1] = 3
+
+// OBJECTS
+let myObject: object
+myObject = []
+console.log(typeof myObject)
+myObject = bands
+myObject = {}
+
+const exampleObj = {
+    prop1: 'Gabe',
+    prop2: true
 }
 
-let postId: string | number
-let isActive: number | boolean
+exampleObj.prop2 = false
+// using an interface instead of type
 
-let re: RegExp = /\w+/g
+interface Guitarist {
+    name?: string,
+    active: boolean,
+    albums: (string | number)[]
+}
+// type Guitarist = {
+//     name: string,
+//     active?: boolean,
+//     albums: (string | number)[]
+// }
+
+let evh: Guitarist = {
+    name: 'Eddie',
+    active: false,
+    albums: [1984, 5150, 'OU812']
+}
+let JP: Guitarist = {
+    name: 'Jimmy',
+    active: true,
+    albums: ['I', 'II', 'IV']
+}
+
+const greetGuitarist = (guitarist: Guitarist) => {
+    if (guitarist.name) {
+        return `Hello, ${guitarist.name.toUpperCase()}`
+    }
+    return 'Hello!'
+
+}
+console.log(greetGuitarist(JP))
+
+// ENUMS
+// these are an object but the contents are enumerated
+enum Grade {
+    U = 1,
+    D,
+    C,
+    B,
+    A,
+}
+
+console.log(Grade.U) // displays 1
