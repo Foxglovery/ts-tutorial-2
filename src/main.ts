@@ -1,10 +1,20 @@
-let username = "Gabe"
-console.log(username)
+let myName: string = 'Gabe'
 
-let a: number = 12
-let b: number = 6
-let c: number = 2
+let meaningOfLife: number;
+let isLoading: boolean;
+// this is a union type allowing for either 
+// let album: string | number;
+let album: any;
+myName = 'Gabriel'
+meaningOfLife = 42
+isLoading = true
+album = 'Van Halen'
 
-console.log(a / b)
+const sum = (a: number, b: string) => {
+    return a + b
+}
 
-console.log(c * b)
+let postId: string | number
+let isActive: number | boolean
+
+let re: RegExp = /\w+/g
