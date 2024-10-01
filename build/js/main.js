@@ -1,61 +1,65 @@
 "use strict";
-let stringArr = ['one', 'hey', 'Gabe'];
-let guitars = ['Strat', 'Les Paul', 5150];
-let mixedData = ['EVH', 1984, true];
-stringArr[0] = 'John';
-stringArr.push('heyo');
-guitars[0] = 1984;
-guitars.unshift('Jim');
-guitars = stringArr;
-mixedData = guitars;
-let test = [];
-let bands = [];
-bands.push('Van Halen');
-//TUPLE
-let myTuple = ['Gabe', 42, true];
-let mixed = ['John', 1, false];
-myTuple[1] = 3;
-// OBJECTS
-let myObject;
-myObject = [];
-console.log(typeof myObject);
-myObject = bands;
-myObject = {};
-const exampleObj = {
-    prop1: 'Gabe',
-    prop2: true
+// cannot be done with an interface
+// LITERAL TYPES
+let myName;
+let userName;
+userName = 'Amy';
+// FUNCTIONS
+const add = (a, b) => {
+    return a + b;
 };
-exampleObj.prop2 = false;
-// type Guitarist = {
-//     name: string,
-//     active?: boolean,
-//     albums: (string | number)[]
-// }
-let evh = {
-    name: 'Eddie',
-    active: false,
-    albums: [1984, 5150, 'OU812']
+const logMsg = (message) => {
+    console.log(message);
 };
-let JP = {
-    name: 'Jimmy',
-    active: true,
-    albums: ['I', 'II', 'IV']
+logMsg('Hello');
+logMsg(add(2, 3));
+let subtract = function (c, d) {
+    return c - d;
 };
-const greetGuitarist = (guitarist) => {
-    if (guitarist.name) {
-        return `Hello, ${guitarist.name.toUpperCase()}`;
+let multiply = function (c, d) {
+    return c * d;
+};
+logMsg(multiply(2, 2));
+//can also use interface instead of alias
+// interface mathFunction {
+//     (a: number, b: number): number
+// } 
+// Optional parameters
+// in order to use optional parameter, must use a type guard
+// and it needs to be last
+const addAll = (a, b, c) => {
+    if (typeof c !== 'undefined') {
+        return a + b + c;
     }
-    return 'Hello!';
+    return a + b;
 };
-console.log(greetGuitarist(JP));
-// ENUMS
-// these are an object but the contents are enumerated
-var Grade;
-(function (Grade) {
-    Grade[Grade["U"] = 1] = "U";
-    Grade[Grade["D"] = 2] = "D";
-    Grade[Grade["C"] = 3] = "C";
-    Grade[Grade["B"] = 4] = "B";
-    Grade[Grade["A"] = 5] = "A";
-})(Grade || (Grade = {}));
-console.log(Grade.U); // displays 1
+// DEFAULT PARAM VALUE
+const sumAll = (a = 10, b, c = 2) => {
+    return a + b + c;
+};
+logMsg(addAll(2, 3, 2));
+logMsg(addAll(2, 3));
+logMsg(sumAll(undefined, 3));
+// Rest Parameters
+// needs to come at the end
+const total = (a, ...nums) => {
+    return a + nums.reduce((prev, curr) => prev + curr);
+};
+logMsg(total(10, 2, 3, 4));
+// THE NEVER TYPE
+// for functions that explicitly throw errors or if has infinite loop
+const createError = (errMsg) => {
+    throw new Error(errMsg);
+};
+// custom type guard
+const isNumber = (value) => {
+    return typeof value === 'number' ? true : false;
+};
+// use of the Never type
+const numberOrString = (value) => {
+    if (typeof value === 'string')
+        return 'string';
+    if (isNumber(value))
+        return 'number';
+    return createError('This should never happen');
+};

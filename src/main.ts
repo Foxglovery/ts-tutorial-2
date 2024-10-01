@@ -1,84 +1,97 @@
+// TYPE ALIASES
+type stringOrNumber = string | number
 
-
-let stringArr = ['one', 'hey', 'Gabe']
-let guitars = ['Strat', 'Les Paul', 5150]
-
-let mixedData = ['EVH', 1984, true]
-
-stringArr[0] = 'John'
-stringArr.push('heyo')
-
-guitars[0] = 1984
-guitars.unshift('Jim')
-
-guitars = stringArr
-mixedData = guitars
-
-let test = []
-let bands: string[] = []
-bands.push('Van Halen')
-
-//TUPLE
-let myTuple: [string, number, boolean] = ['Gabe', 42, true]
-
-let mixed = ['John', 1, false]
-
-myTuple[1] = 3
-
-// OBJECTS
-let myObject: object
-myObject = []
-console.log(typeof myObject)
-myObject = bands
-myObject = {}
-
-const exampleObj = {
-    prop1: 'Gabe',
-    prop2: true
-}
-
-exampleObj.prop2 = false
-// using an interface instead of type
-
-interface Guitarist {
+type stringOrNumberArray = (string | number)[]
+type Guitarist = {
     name?: string,
     active: boolean,
-    albums: (string | number)[]
-}
-// type Guitarist = {
-//     name: string,
-//     active?: boolean,
-//     albums: (string | number)[]
-// }
-
-let evh: Guitarist = {
-    name: 'Eddie',
-    active: false,
-    albums: [1984, 5150, 'OU812']
-}
-let JP: Guitarist = {
-    name: 'Jimmy',
-    active: true,
-    albums: ['I', 'II', 'IV']
+    albums: stringOrNumberArray
 }
 
-const greetGuitarist = (guitarist: Guitarist) => {
-    if (guitarist.name) {
-        return `Hello, ${guitarist.name.toUpperCase()}`
+type UserId = stringOrNumber
+
+// cannot be done with an interface
+
+// LITERAL TYPES
+let myName: 'Gabe'
+
+let userName: 'John' | 'Amy' | 'Greg'
+userName = 'Amy'
+
+// FUNCTIONS
+const add = (a: number, b: number): number => {
+    return a + b
+}
+
+const logMsg = (message: any): void => {
+    console.log(message)
+}
+
+logMsg('Hello')
+logMsg(add(2, 3))
+
+let subtract = function (c: number, d: number):
+    number {
+    return c - d
+}
+
+type mathFunction = (a: number, b: number) => number
+
+let multiply: mathFunction = function (c, d) {
+    return c * d
+}
+
+logMsg(multiply(2, 2))
+
+//can also use interface instead of alias
+
+// interface mathFunction {
+//     (a: number, b: number): number
+// } 
+
+// Optional parameters
+// in order to use optional parameter, must use a type guard
+// and it needs to be last
+const addAll = (a: number, b: number, c?: number):
+    number => {
+    if (typeof c !== 'undefined') {
+        return a + b + c
     }
-    return 'Hello!'
-
+    return a + b
 }
-console.log(greetGuitarist(JP))
-
-// ENUMS
-// these are an object but the contents are enumerated
-enum Grade {
-    U = 1,
-    D,
-    C,
-    B,
-    A,
+// DEFAULT PARAM VALUE
+const sumAll = (a: number = 10, b: number, c: number = 2):
+    number => {
+    return a + b + c
 }
 
-console.log(Grade.U) // displays 1
+logMsg(addAll(2, 3, 2))
+logMsg(addAll(2, 3))
+logMsg(sumAll(undefined, 3))
+
+// Rest Parameters
+// needs to come at the end
+const total = (a: number, ...nums: number[]): number => {
+    return a + nums.reduce((prev, curr) => prev + curr)
+}
+
+logMsg(total(10, 2, 3, 4))
+
+// THE NEVER TYPE
+// for functions that explicitly throw errors or if has infinite loop
+
+const createError = (errMsg: string) => {
+    throw new Error(errMsg)
+}
+
+// custom type guard
+const isNumber = (value: any): boolean => {
+    return typeof value === 'number' ? true : false
+}
+
+// use of the Never type
+const numberOrString = (value: number | string): string => {
+    if (typeof value === 'string') return 'string'
+    if (isNumber(value)) return 'number'
+    return createError('This should never happen')
+}
