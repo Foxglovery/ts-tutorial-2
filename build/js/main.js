@@ -1,65 +1,27 @@
 "use strict";
-// cannot be done with an interface
-// LITERAL TYPES
-let myName;
-let userName;
-userName = 'Amy';
-// FUNCTIONS
-const add = (a, b) => {
-    return a + b;
+// convert to more or less specific
+let a = 'hello';
+let b = a; // assigned to less specific type
+let c = a; // more specific
+// using angle brackets
+let d = 'world';
+let e = 'world';
+const addOrConcat = (a, b, c) => {
+    if (c === 'add')
+        return a + b;
+    return '' + a + b;
 };
-const logMsg = (message) => {
-    console.log(message);
-};
-logMsg('Hello');
-logMsg(add(2, 3));
-let subtract = function (c, d) {
-    return c - d;
-};
-let multiply = function (c, d) {
-    return c * d;
-};
-logMsg(multiply(2, 2));
-//can also use interface instead of alias
-// interface mathFunction {
-//     (a: number, b: number): number
-// } 
-// Optional parameters
-// in order to use optional parameter, must use a type guard
-// and it needs to be last
-const addAll = (a, b, c) => {
-    if (typeof c !== 'undefined') {
-        return a + b + c;
-    }
-    return a + b;
-};
-// DEFAULT PARAM VALUE
-const sumAll = (a = 10, b, c = 2) => {
-    return a + b + c;
-};
-logMsg(addAll(2, 3, 2));
-logMsg(addAll(2, 3));
-logMsg(sumAll(undefined, 3));
-// Rest Parameters
-// needs to come at the end
-const total = (a, ...nums) => {
-    return a + nums.reduce((prev, curr) => prev + curr);
-};
-logMsg(total(10, 2, 3, 4));
-// THE NEVER TYPE
-// for functions that explicitly throw errors or if has infinite loop
-const createError = (errMsg) => {
-    throw new Error(errMsg);
-};
-// custom type guard
-const isNumber = (value) => {
-    return typeof value === 'number' ? true : false;
-};
-// use of the Never type
-const numberOrString = (value) => {
-    if (typeof value === 'string')
-        return 'string';
-    if (isNumber(value))
-        return 'number';
-    return createError('This should never happen');
-};
+// have told ts the function returns a string in this instance
+let myVal = addOrConcat(2, 2, 'concat');
+// be careful! TS wont see a problem here but a string is returned
+let nextVal = addOrConcat(2, 2, 'concat');
+// Double Casting or Force Casting
+//10 as string // will become below
+10;
+// The DOM
+// const img = document.getElementById('img') as HTMLImageElement // non null assertion
+// const myImg = document.getElementById('#img') as HTMLImageElement
+// // bracket notation
+// const nextImg = <HTMLImageElement>document.getElementById('#img')
+// img.src
+// myImg.src

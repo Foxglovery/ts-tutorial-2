@@ -1,97 +1,36 @@
-// TYPE ALIASES
-type stringOrNumber = string | number
+type One = string
+type Two = string | number
+type Three = 'hello'
 
-type stringOrNumberArray = (string | number)[]
-type Guitarist = {
-    name?: string,
-    active: boolean,
-    albums: stringOrNumberArray
+// convert to more or less specific
+let a: One = 'hello'
+let b = a as Two // assigned to less specific type
+let c = a as Three // more specific
+// using angle brackets
+let d = <One>'world'
+let e = <Two>'world'
+
+const addOrConcat = (a: number, b: number, c: 'add' | 'concat'): number | string => {
+    if (c === 'add') return a + b
+    return '' + a + b
 }
+// have told ts the function returns a string in this instance
+let myVal: string = addOrConcat(2, 2, 'concat') as string
+// be careful! TS wont see a problem here but a string is returned
+let nextVal: number = addOrConcat(2, 2, 'concat') as number
 
-type UserId = stringOrNumber
+// Double Casting or Force Casting
+//10 as string // will become below
+(10 as unknown) as string
 
-// cannot be done with an interface
+// The DOM
+// const img = document.getElementById('img') as HTMLImageElement // non null assertion
+// const myImg = document.getElementById('#img') as HTMLImageElement
+// // bracket notation
+// const nextImg = <HTMLImageElement>document.getElementById('#img')
 
-// LITERAL TYPES
-let myName: 'Gabe'
 
-let userName: 'John' | 'Amy' | 'Greg'
-userName = 'Amy'
+// img.src
+// myImg.src
 
-// FUNCTIONS
-const add = (a: number, b: number): number => {
-    return a + b
-}
 
-const logMsg = (message: any): void => {
-    console.log(message)
-}
-
-logMsg('Hello')
-logMsg(add(2, 3))
-
-let subtract = function (c: number, d: number):
-    number {
-    return c - d
-}
-
-type mathFunction = (a: number, b: number) => number
-
-let multiply: mathFunction = function (c, d) {
-    return c * d
-}
-
-logMsg(multiply(2, 2))
-
-//can also use interface instead of alias
-
-// interface mathFunction {
-//     (a: number, b: number): number
-// } 
-
-// Optional parameters
-// in order to use optional parameter, must use a type guard
-// and it needs to be last
-const addAll = (a: number, b: number, c?: number):
-    number => {
-    if (typeof c !== 'undefined') {
-        return a + b + c
-    }
-    return a + b
-}
-// DEFAULT PARAM VALUE
-const sumAll = (a: number = 10, b: number, c: number = 2):
-    number => {
-    return a + b + c
-}
-
-logMsg(addAll(2, 3, 2))
-logMsg(addAll(2, 3))
-logMsg(sumAll(undefined, 3))
-
-// Rest Parameters
-// needs to come at the end
-const total = (a: number, ...nums: number[]): number => {
-    return a + nums.reduce((prev, curr) => prev + curr)
-}
-
-logMsg(total(10, 2, 3, 4))
-
-// THE NEVER TYPE
-// for functions that explicitly throw errors or if has infinite loop
-
-const createError = (errMsg: string) => {
-    throw new Error(errMsg)
-}
-
-// custom type guard
-const isNumber = (value: any): boolean => {
-    return typeof value === 'number' ? true : false
-}
-
-// use of the Never type
-const numberOrString = (value: number | string): string => {
-    if (typeof value === 'string') return 'string'
-    if (isNumber(value)) return 'number'
-    return createError('This should never happen')
-}
