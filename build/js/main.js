@@ -1,98 +1,54 @@
 "use strict";
-// CLASSES
-// properties need to be declared and initialized with a constructor
-// can be kept dry by using visibility modifiers: public, readonly etc
-// will need to remove the declaration
-class Coder {
-    constructor(name, music, 
-    // private property only accessible inside of the class using methods from the class like getAge()
-    age, 
-    // protected is only accessible inside the class and its subclasses
-    lang = 'Typescript') {
-        this.name = name;
-        this.music = music;
-        this.age = age;
-        this.lang = lang;
-        // dont technically need these anymore
-        this.name = name;
-        this.music = music;
-        this.age = age,
-            this.lang = lang;
+// INDEX SIGNATURES
+// The index signature tells TS what type each property will be
+// property on signature can also be made read-only
+// interface TransactionObj {
+//     readonly [index: string]: number
+// }
+const todaysTransactions = {
+    Pizza: -10,
+    Books: -5,
+    Job: 50
+};
+// if you didn't know the names of the entries needed in advance
+// an index signature can be used
+// or if trying to access dynamically
+console.log(todaysTransactions.Pizza);
+console.log(todaysTransactions['Pizza']);
+let prop = 'Pizza';
+console.log(todaysTransactions[prop]);
+// cant index with type string
+const todaysNet = (transactions) => {
+    let total = 0;
+    for (const transaction in transactions) {
+        total += transactions[transaction];
     }
-    getAge() {
-        return `Hello, I am ${this.age}`;
-    }
+    return total;
+};
+console.log(todaysNet(todaysTransactions));
+// this will return undefined because TS doesn't know what
+// names we have given to the properties in the future
+console.log(todaysTransactions['Frank']);
+const student = {
+    name: 'Doug',
+    GPA: 3.5,
+    classes: [100, 200]
+};
+for (const key in student) {
+    console.log(`${key}: ${student[key]}`);
 }
-const Gabe = new Coder('Gabe', 'Scree', 36);
-console.log(Gabe.getAge());
-// EXTEND A CLASS
-class WebDev extends Coder {
-    constructor(computer, name, music, age) {
-        // call to super is required when extending, include what you are passing from the other class
-        super(name, music, age);
-        this.computer = computer;
-        this.computer = computer;
-    }
-    // added method to get lang since this is a subclass
-    getLang() {
-        return `I write ${this.lang}`;
-    }
+Object.keys(student).map(key => {
+    console.log(student[key]);
+});
+const logStudentKey = (student, key) => {
+    console.log(`Student ${key}: ${student[key]}`);
+};
+logStudentKey(student, 'name');
+const monthlyIncomes = {
+    salary: 500,
+    bonus: 100,
+    sidehustle: 250
+};
+for (const revenue in monthlyIncomes) {
+    console.log(monthlyIncomes[revenue]);
 }
-const Sara = new WebDev('Mac', 'Sara', 'Lofi', 25);
-console.log(Sara.getLang());
-class Guitarist {
-    constructor(name, instrument) {
-        this.name = name;
-        this.instrument = instrument;
-    }
-    play(action) {
-        return `${this.name} ${action} the ${this.instrument}`;
-    }
-}
-const Page = new Guitarist('Jimmy', 'guitar');
-console.log(Page.play('strums'));
-//////////////////////////////////////////////////////////
-// STATIC : does not refer to any instantiation of the class, but the class directly
-class Peeps {
-    static getCount() {
-        return Peeps.count;
-    }
-    constructor(name) {
-        this.name = name;
-        this.name = name;
-        // putting the ++ on left makes count increment first
-        // putting this in the constructor increases it everytime a new Peep is made
-        this.id = ++Peeps.count;
-    }
-}
-Peeps.count = 0;
-const John = new Peeps('John');
-const Steve = new Peeps('Steve');
-const Amy = new Peeps('Amy');
-console.log(Steve.id);
-console.log(Amy.id);
-console.log(Peeps.count);
-//////////////////////////////////////////////////////////////
-// Getters and Setters
-class Bands {
-    constructor() {
-        this.dataState = [];
-    }
-    get data() {
-        return this.dataState;
-    }
-    set data(value) {
-        if (Array.isArray(value) && value.every(el => typeof el === 'string')) {
-            this.dataState = value;
-            return;
-        }
-        else {
-            throw new Error('Param is not an array of strings');
-        }
-    }
-}
-const myBands = new Bands();
-myBands.data = ['Tooters', 'Jimpers'];
-console.log(myBands.data);
-myBands.data = [...myBands.data, 'Kunkle'];
-console.log(myBands.data);

@@ -1,138 +1,103 @@
-// CLASSES
+// INDEX SIGNATURES
 
-// properties need to be declared and initialized with a constructor
-// can be kept dry by using visibility modifiers: public, readonly etc
-// will need to remove the declaration
-class Coder {
+// ts requires IS if accessing object dynamically
+// IS goes at the top of the interface
 
-    // unusual example for adding property that wont be initialized right away
-    secondLang!: string
-
-    constructor(
-        public readonly name: string,
-        public music: string,
-        // private property only accessible inside of the class using methods from the class like getAge()
-        private age: number,
-        // protected is only accessible inside the class and its subclasses
-        protected lang: string = 'Typescript'
-    ) {
-        // dont technically need these anymore
-        this.name = name
-        this.music = music
-        this.age = age,
-            this.lang = lang
-    }
-
-    public getAge() {
-        return `Hello, I am ${this.age}`
-    }
+interface TransactionObj {
+    readonly [index: string]: number
+    Pizza: number,
+    Books: number,
+    Job: number
 }
 
-const Gabe = new Coder('Gabe', 'Scree', 36)
-console.log(Gabe.getAge())
+// The index signature tells TS what type each property will be
+// property on signature can also be made read-only
 
-// EXTEND A CLASS
+// interface TransactionObj {
+//     readonly [index: string]: number
+// }
 
-class WebDev extends Coder {
-    constructor(
-        public computer: string,
-        name: string,
-        music: string,
-        age: number
-    ) {
-        // call to super is required when extending, include what you are passing from the other class
-        super(name, music, age)
-        this.computer = computer
+const todaysTransactions: TransactionObj = {
+    Pizza: -10,
+    Books: -5,
+    Job: 50
+}
+// if you didn't know the names of the entries needed in advance
+// an index signature can be used
+// or if trying to access dynamically
+
+console.log(todaysTransactions.Pizza)
+console.log(todaysTransactions['Pizza'])
+
+let prop: string = 'Pizza'
+console.log(todaysTransactions[prop])
+// cant index with type string
+
+const todaysNet = (transactions: TransactionObj): number => {
+    let total = 0
+    for (const transaction in transactions) {
+        total += transactions[transaction]
     }
-    // added method to get lang since this is a subclass
-    public getLang() {
-        return `I write ${this.lang}`
-    }
+    return total
 }
 
-const Sara = new WebDev('Mac', 'Sara', 'Lofi', 25)
+console.log(todaysNet(todaysTransactions))
 
-console.log(Sara.getLang())
+// this will return undefined because TS doesn't know what
+// names we have given to the properties in the future
+console.log(todaysTransactions['Frank'])
 
-///////////////////////////////////////////////////
+////////////////////////////////////////////////////////
+// without using IS you can use keyof and an assertion
 
-// Applying interface to class
-
-interface Musician {
+// if using optional keys, must specify undefined in IS
+// but that also lets you access non-extant properties
+interface Student {
+    //[key: string]: string | number | number[] | undefined
     name: string,
-    instrument: string,
-    play(action: string): string
-}
-class Guitarist implements Musician {
-    name: string
-    instrument: string
-
-    constructor(name: string, instrument: string) {
-        this.name = name
-        this.instrument = instrument
-    }
-
-    play(action: string) {
-        return `${this.name} ${action} the ${this.instrument}`
-    }
+    GPA: number,
+    classes?: number[]
 }
 
-const Page = new Guitarist('Jimmy', 'guitar')
-console.log(Page.play('strums'))
-//////////////////////////////////////////////////////////
-// STATIC : does not refer to any instantiation of the class, but the class directly
-class Peeps {
-    static count: number = 0
-
-    static getCount(): number {
-        return Peeps.count
-    }
-
-    public id: number
-
-    constructor(public name: string) {
-        this.name = name
-        // putting the ++ on left makes count increment first
-        // putting this in the constructor increases it everytime a new Peep is made
-        this.id = ++Peeps.count
-    }
-
+const student: Student = {
+    name: 'Doug',
+    GPA: 3.5,
+    classes: [100, 200]
 }
 
-const John = new Peeps('John')
-const Steve = new Peeps('Steve')
-const Amy = new Peeps('Amy')
-
-console.log(Steve.id)
-console.log(Amy.id)
-console.log(Peeps.count)
-//////////////////////////////////////////////////////////////
-// Getters and Setters
-class Bands {
-    private dataState: string[]
-
-    constructor() {
-        this.dataState = []
-    }
-
-    public get data(): string[] {
-        return this.dataState
-    }
-
-    public set data(value: string[]) {
-        if (Array.isArray(value) && value.every(el =>
-            typeof el === 'string'
-        )) {
-            this.dataState = value
-            return
-        } else {
-            throw new Error('Param is not an array of strings')
-        }
-    }
+for (const key in student) {
+    console.log(`${key}: ${student[key as keyof Student]}`)
 }
 
-const myBands = new Bands()
-myBands.data = ['Tooters', 'Jimpers']
-console.log(myBands.data)
-myBands.data = [...myBands.data, 'Kunkle']
-console.log(myBands.data)
+Object.keys(student).map(key => {
+    console.log(student[key as keyof typeof student])
+})
+
+const logStudentKey = (student: Student, key: keyof Student): void => {
+    console.log(`Student ${key}: ${student[key]}`)
+}
+
+logStudentKey(student, 'name')
+///////////////////////////////////////////////
+// Using Record Utility Type
+
+// interface Incomes {
+//     [key: string]: number
+
+// }
+
+
+
+type Streams = 'salary' | 'bonus' | 'sidehustle'
+
+type Incomes = Record<Streams, number>
+
+const monthlyIncomes: Incomes = {
+    salary: 500,
+    bonus: 100,
+    sidehustle: 250
+}
+
+for (const revenue in monthlyIncomes) {
+    console.log(monthlyIncomes[revenue as keyof Incomes])
+}
