@@ -1,54 +1,93 @@
 "use strict";
-// INDEX SIGNATURES
-// The index signature tells TS what type each property will be
-// property on signature can also be made read-only
-// interface TransactionObj {
-//     readonly [index: string]: number
-// }
-const todaysTransactions = {
-    Pizza: -10,
-    Books: -5,
-    Job: 50
+// GENERICS
+// sometimes you dont know what types will be passed into functions
+const echo = (arg) => arg;
+// when any type can be passed in to a utility function it is helpful to use Generics
+const isObj = (arg) => {
+    return (typeof arg === 'object' && !Array.isArray(arg)
+        && arg !== null);
 };
-// if you didn't know the names of the entries needed in advance
-// an index signature can be used
-// or if trying to access dynamically
-console.log(todaysTransactions.Pizza);
-console.log(todaysTransactions['Pizza']);
-let prop = 'Pizza';
-console.log(todaysTransactions[prop]);
-// cant index with type string
-const todaysNet = (transactions) => {
-    let total = 0;
-    for (const transaction in transactions) {
-        total += transactions[transaction];
+// console.log(isObj(true))
+// console.log(isObj('John'))
+// console.log(isObj([1, 2, 3]))
+// console.log(isObj({ name: 'John' }))
+// console.log(isObj(null))
+const isTrue = (arg) => {
+    if (Array.isArray(arg) && !arg.length) {
+        return { arg, is: false };
     }
-    return total;
+    // assertion is needed here for the keys
+    if (isObj(arg) && !Object.keys(arg).length) {
+        return { arg, is: false };
+    }
+    return { arg, is: !!arg };
 };
-console.log(todaysNet(todaysTransactions));
-// this will return undefined because TS doesn't know what
-// names we have given to the properties in the future
-console.log(todaysTransactions['Frank']);
-const student = {
-    name: 'Doug',
-    GPA: 3.5,
-    classes: [100, 200]
+console.log(isTrue(false));
+console.log(isTrue(0));
+console.log(isTrue(true));
+console.log(isTrue(1));
+console.log(isTrue('Joe'));
+console.log(isTrue(''));
+console.log(isTrue(null));
+console.log(isTrue(undefined));
+console.log(isTrue({}));
+console.log(isTrue({ name: 'Joe' }));
+console.log(isTrue([]));
+console.log(isTrue([1, 2, 3]));
+console.log(isTrue(NaN));
+console.log(isTrue(-0));
+const checkBoolValue = (arg) => {
+    if (Array.isArray(arg) && !arg.length) {
+        return { value: arg, is: false };
+    }
+    // assertion is needed here for the keys
+    if (isObj(arg) && !Object.keys(arg).length) {
+        return { value: arg, is: false };
+    }
+    return { value: arg, is: !!arg };
 };
-for (const key in student) {
-    console.log(`${key}: ${student[key]}`);
+// using extends, type now will require an id property or narrows
+const processUser = (user) => {
+    // process the user logic here
+    return user;
+};
+console.log(processUser({ id: 1, name: 'Joe' }));
+//console.log(processUser({ name: 'Joe' })) // not assignable to type HasID
+//returns array of keys on specific properties of an array
+const getUsersProperty = (users, key) => {
+    return users.map(user => user[key]);
+};
+const userArray = [
+    {
+        "userId": 1,
+        "id": 1,
+        "title": "delectus aut autem",
+        "completed": false
+    },
+    {
+        "userId": 2,
+        "id": 2,
+        "title": "Placidus eligium Nobilitis",
+        "completed": true
+    }
+];
+console.log(getUsersProperty(userArray, "title"));
+console.log(getUsersProperty(userArray, "completed"));
+// using a generic in a class
+class StateObject {
+    constructor(value) {
+        this.data = value;
+    }
+    get state() {
+        return this.data;
+    }
+    set state(value) {
+        this.data = value;
+    }
 }
-Object.keys(student).map(key => {
-    console.log(student[key]);
-});
-const logStudentKey = (student, key) => {
-    console.log(`Student ${key}: ${student[key]}`);
-};
-logStudentKey(student, 'name');
-const monthlyIncomes = {
-    salary: 500,
-    bonus: 100,
-    sidehustle: 250
-};
-for (const revenue in monthlyIncomes) {
-    console.log(monthlyIncomes[revenue]);
-}
+const store = new StateObject('John');
+console.log(store.state);
+store.state = 'Joe';
+const myState = new StateObject([12]);
+myState.state = (['Joseph', 22, true]);
+console.log(myState.state);

@@ -1,103 +1,121 @@
-// INDEX SIGNATURES
+// GENERICS
+// sometimes you dont know what types will be passed into functions
 
-// ts requires IS if accessing object dynamically
-// IS goes at the top of the interface
 
-interface TransactionObj {
-    readonly [index: string]: number
-    Pizza: number,
-    Books: number,
-    Job: number
+
+const echo = <T>(arg: T): T => arg
+
+// when any type can be passed in to a utility function it is helpful to use Generics
+
+const isObj = <T>(arg: T): boolean => {
+    return (typeof arg === 'object' && !Array.isArray(arg)
+        && arg !== null)
 }
 
-// The index signature tells TS what type each property will be
-// property on signature can also be made read-only
+// console.log(isObj(true))
+// console.log(isObj('John'))
+// console.log(isObj([1, 2, 3]))
+// console.log(isObj({ name: 'John' }))
+// console.log(isObj(null))
 
-// interface TransactionObj {
-//     readonly [index: string]: number
-// }
-
-const todaysTransactions: TransactionObj = {
-    Pizza: -10,
-    Books: -5,
-    Job: 50
-}
-// if you didn't know the names of the entries needed in advance
-// an index signature can be used
-// or if trying to access dynamically
-
-console.log(todaysTransactions.Pizza)
-console.log(todaysTransactions['Pizza'])
-
-let prop: string = 'Pizza'
-console.log(todaysTransactions[prop])
-// cant index with type string
-
-const todaysNet = (transactions: TransactionObj): number => {
-    let total = 0
-    for (const transaction in transactions) {
-        total += transactions[transaction]
+const isTrue = <T>(arg: T): { arg: T, is: boolean } => {
+    if (Array.isArray(arg) && !arg.length) {
+        return { arg, is: false }
     }
-    return total
+    // assertion is needed here for the keys
+    if (isObj(arg) && !Object.keys(arg as keyof T).length) {
+        return { arg, is: false }
+    }
+    return { arg, is: !!arg }
+}
+console.log(isTrue(false))
+console.log(isTrue(0))
+console.log(isTrue(true))
+console.log(isTrue(1))
+console.log(isTrue('Joe'))
+console.log(isTrue(''))
+console.log(isTrue(null))
+console.log(isTrue(undefined))
+console.log(isTrue({}))
+console.log(isTrue({ name: 'Joe' }))
+console.log(isTrue([]))
+console.log(isTrue([1, 2, 3]))
+console.log(isTrue(NaN))
+console.log(isTrue(-0))
+
+// same thing but using an interface
+interface BoolCheck<T> {
+    value: T,
+    is: boolean
 }
 
-console.log(todaysNet(todaysTransactions))
-
-// this will return undefined because TS doesn't know what
-// names we have given to the properties in the future
-console.log(todaysTransactions['Frank'])
-
-////////////////////////////////////////////////////////
-// without using IS you can use keyof and an assertion
-
-// if using optional keys, must specify undefined in IS
-// but that also lets you access non-extant properties
-interface Student {
-    //[key: string]: string | number | number[] | undefined
-    name: string,
-    GPA: number,
-    classes?: number[]
+const checkBoolValue = <T>(arg: T): BoolCheck<T> => {
+    if (Array.isArray(arg) && !arg.length) {
+        return { value: arg, is: false }
+    }
+    // assertion is needed here for the keys
+    if (isObj(arg) && !Object.keys(arg as keyof T).length) {
+        return { value: arg, is: false }
+    }
+    return { value: arg, is: !!arg }
 }
 
-const student: Student = {
-    name: 'Doug',
-    GPA: 3.5,
-    classes: [100, 200]
+interface HasID {
+    id: number
+}
+// using extends, type now will require an id property or narrows
+const processUser = <T extends HasID>(user: T): T => {
+    // process the user logic here
+    return user
 }
 
-for (const key in student) {
-    console.log(`${key}: ${student[key as keyof Student]}`)
+console.log(processUser({ id: 1, name: 'Joe' }))
+//console.log(processUser({ name: 'Joe' })) // not assignable to type HasID
+
+//returns array of keys on specific properties of an array
+const getUsersProperty = <T extends HasID, K extends keyof T>
+    (users: T[], key: K): T[K][] => {
+    return users.map(user => user[key])
 }
 
-Object.keys(student).map(key => {
-    console.log(student[key as keyof typeof student])
-})
+const userArray = [
+    {
+        "userId": 1,
+        "id": 1,
+        "title": "delectus aut autem",
+        "completed": false
+    },
+    {
+        "userId": 2,
+        "id": 2,
+        "title": "Placidus eligium Nobilitis",
+        "completed": true
+    }
+]
 
-const logStudentKey = (student: Student, key: keyof Student): void => {
-    console.log(`Student ${key}: ${student[key]}`)
+console.log(getUsersProperty(userArray, "title"))
+console.log(getUsersProperty(userArray, "completed"))
+
+// using a generic in a class
+class StateObject<T> {
+    private data: T
+
+    constructor(value: T) {
+        this.data = value
+    }
+    get state(): T {
+        return this.data
+    }
+    set state(value: T) {
+        this.data = value
+    }
 }
 
-logStudentKey(student, 'name')
-///////////////////////////////////////////////
-// Using Record Utility Type
+const store = new StateObject('John')
+console.log(store.state)
+store.state = 'Joe'
 
-// interface Incomes {
-//     [key: string]: number
+const myState = new StateObject<(string | number | boolean)[]>([12])
 
-// }
-
-
-
-type Streams = 'salary' | 'bonus' | 'sidehustle'
-
-type Incomes = Record<Streams, number>
-
-const monthlyIncomes: Incomes = {
-    salary: 500,
-    bonus: 100,
-    sidehustle: 250
-}
-
-for (const revenue in monthlyIncomes) {
-    console.log(monthlyIncomes[revenue as keyof Incomes])
-}
+myState.state = (['Joseph', 22, true])
+console.log(myState.state)
